@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>紫微斗数排盘测试页面</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+            display: inline-block;
+            width: 300px;
+            margin-right: 20px;
+        }
+        label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+        input, select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 150px;
+        }
+        button {
+            background-color: #6f42c1;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background-color: #5a32a3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-left: 4px solid #6f42c1;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #6f42c1;
+            padding-bottom: 5px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+        }
+        .info-item {
+            padding: 5px 0;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 120px;
+        }
+        .error {
+            color: red;
+            background-color: #ffe6e6;
+            border-left-color: red;
+        }
+        .ziwei-chart {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 2px;
+            margin: 20px 0;
+            max-width: 800px;
+            height: 800px;
+            border: 2px solid #6f42c1;
+        }
+        .ziwei-cell {
+            border: 1px solid #ddd;
+            padding: 8px;
+            background-color: #fff;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            font-size: 12px;
+        }
+        .sima-place {
+            border: 2px solid #ff6b6b;
+            background-color: #fff5f5;
+        }
+        .sima-place .palace-header {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        .palace-header {
+            font-weight: bold;
+            color: #6f42c1;
+            font-size: 14px;
+            margin-bottom: 3px;
+            text-align: center;
+        }
+        .palace-dizhi {
+            color: #666;
+            font-size: 11px;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .stars-container {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            align-content: flex-start;
+        }
+        .star {
+            background-color: #f0f0f0;
+            padding: 1px 3px;
+            border-radius: 3px;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+        .star.major {
+            background-color: #6f42c1;
+            color: white;
+            font-weight: bold;
+        }
+        .star.sihua {
+            border: 2px solid;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 10px;
+        }
+        .star.lu { border-color: #28a745; color: #28a745; }
+        .star.quan { border-color: #dc3545; color: #dc3545; }
+        .star.ke { border-color: #007bff; color: #007bff; }
+        .star.ji { border-color: #ffc107; color: #ffc107; }
+        .center-info {
+            grid-column: 2 / 4;
+            grid-row: 2 / 4;
+            background-color: #f8f9fa;
+            border: 2px solid #6f42c1;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .center-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #6f42c1;
+            margin-bottom: 10px;
+        }
+        .center-content {
+            font-size: 12px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>紫微斗数排盘测试页面</h1>
+        <p style="color: #6f42c1; font-weight: bold; margin-bottom: 20px;">
+            ✨ 采用文墨天机排盘方式，确保排盘结果准确性
+        </p>
+        
+        <form id="ziweiForm">
+            <div class="form-group">
+                <label for="name">姓名：</label>
+                <input type="text" id="name" value="测试用户" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="sex">性别：</label>
+                <select id="sex">
+                    <option value="1">男</option>
+                    <option value="0">女</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="occupy">占事：</label>
+                <input type="text" id="occupy" value="求财" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="date">出生时间：</label>
+                <input type="text" id="date" value="2002-02-10 19:15:00" placeholder="YYYY-MM-DD HH:mm:ss" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="dateType">日期类型：</label>
+                <select id="dateType">
+                    <option value="0" selected>公历</option>
+                    <option value="1">农历</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="leapMonthType">闰月类型：</label>
+                <select id="leapMonthType">
+                    <option value="0" selected>不使用闰月</option>
+                    <option value="1">使用闰月</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="jieQiType">节气类型：</label>
+                <select id="jieQiType">
+                    <option value="0" selected>按天计算</option>
+                    <option value="1">按分钟计算</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="wuXingJuType">五行局类型：</label>
+                <select id="wuXingJuType">
+                    <option value="0" selected>自动计算</option>
+                    <option value="1">手动指定</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="liuNianZhi">流年支：</label>
+                <select id="liuNianZhi">
+                    <option value="子" selected>子</option>
+                    <option value="丑">丑</option>
+                    <option value="寅">寅</option>
+                    <option value="卯">卯</option>
+                    <option value="辰">辰</option>
+                    <option value="巳">巳</option>
+                    <option value="午">午</option>
+                    <option value="未">未</option>
+                    <option value="申">申</option>
+                    <option value="酉">酉</option>
+                    <option value="戌">戌</option>
+                    <option value="亥">亥</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="yearGanZhiType">年干支类型：</label>
+                <select id="yearGanZhiType">
+                    <option value="0" selected>正月初一</option>
+                    <option value="1">立春当天</option>
+                    <option value="2">立春交接时刻</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="monthGanZhiType">月干支类型：</label>
+                <select id="monthGanZhiType">
+                    <option value="0" selected>节交接当天</option>
+                    <option value="1">节交接时刻</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="dayGanZhiType">日干支类型：</label>
+                <select id="dayGanZhiType">
+                    <option value="0">晚子时按明天</option>
+                    <option value="1" selected>晚子时按当天</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="hourGanZhiType">时干支类型：</label>
+                <select id="hourGanZhiType">
+                    <option value="0" selected>支持早晚子时</option>
+                </select>
+            </div>
+            
+            <button type="submit">开始紫微斗数排盘</button>
+        </form>
+        
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('ziweiForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                sex: parseInt(document.getElementById('sex').value),
+                occupy: document.getElementById('occupy').value,
+                date: document.getElementById('date').value,
+                dateType: parseInt(document.getElementById('dateType').value),
+                leapMonthType: parseInt(document.getElementById('leapMonthType').value),
+                jieQiType: parseInt(document.getElementById('jieQiType').value),
+                wuXingJuType: parseInt(document.getElementById('wuXingJuType').value),
+                liuNianZhi: document.getElementById('liuNianZhi').value,
+                yearGanZhiType: parseInt(document.getElementById('yearGanZhiType').value),
+                monthGanZhiType: parseInt(document.getElementById('monthGanZhiType').value),
+                dayGanZhiType: parseInt(document.getElementById('dayGanZhiType').value),
+                hourGanZhiType: parseInt(document.getElementById('hourGanZhiType').value)
+            };
+            
+            try {
+                const response = await fetch('/api/ziwei/paiPan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                displayResult(result);
+            } catch (error) {
+                displayError('请求失败: ' + error.message);
+            }
+        });
+        
+        function displayResult(result) {
+            const resultDiv = document.getElementById('result');
+            
+            if (result.code === 200 && result.data) {
+                const data = result.data;
+                resultDiv.innerHTML = generateResultHTML(data);
+                resultDiv.className = 'result';
+            } else {
+                displayError(result.message || '紫微斗数排盘失败');
+            }
+            
+            resultDiv.style.display = 'block';
+        }
+        
+        function generateResultHTML(data) {
+            return `
+                <h2>紫微斗数排盘结果</h2>
+                
+                <div class="section">
+                    <h3>基本信息</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">姓名：</span>${data.name}</div>
+                        <div class="info-item"><span class="info-label">性别：</span>${data.sex}</div>
+                        <div class="info-item"><span class="info-label">乾造/坤造：</span>${data.zao}</div>
+                        <div class="info-item"><span class="info-label">占事：</span>${data.occupy}</div>
+                        <div class="info-item"><span class="info-label">男女阴阳：</span>${data.nanNvYinYang}</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>时间信息</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">公历：</span>${data.solarStr}</div>
+                        <div class="info-item"><span class="info-label">农历：</span>${data.lunarStr}</div>
+                        <div class="info-item"><span class="info-label">星期：</span>${data.xingQi}</div>
+                        <div class="info-item"><span class="info-label">季节：</span>${data.jiJie}</div>
+                        <div class="info-item"><span class="info-label">生肖：</span>${data.shengXiao}</div>
+                        <div class="info-item"><span class="info-label">星座：</span>${data.xingZuo}</div>
+                        <div class="info-item"><span class="info-label">五不遇时：</span>${data.wuBuYuShi}</div>
+                        <div class="info-item"><span class="info-label">太岁类型：</span>${data.taiSuiType || '未设置'}</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>紫微斗数核心信息</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">命宫宫位：</span>${data.mingGongGongWei}</div>
+                        <div class="info-item"><span class="info-label">身宫宫位：</span>${data.shenGongGongWei}</div>
+                        <div class="info-item"><span class="info-label">五行局：</span>${data.wuXingJu}</div>
+                        <div class="info-item"><span class="info-label">命宫地支：</span>${data.mingGongDiZhi}</div>
+                        <div class="info-item"><span class="info-label">身宫地支：</span>${data.shenGongDiZhi}</div>
+                        <div class="info-item"><span class="info-label">命主：</span>${data.mingZhu}</div>
+                        <div class="info-item"><span class="info-label">身主：</span>${data.shenZhu}</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>重要星曜</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">紫微星宫位：</span>${data.ziWeiXingGongWei} (${data.ziWeiXingGongDiZhi})</div>
+                        <div class="info-item"><span class="info-label">天府星宫位：</span>${data.tianFuXingGongWei} (${data.tianFuXingGongDiZhi})</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>四化星</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">化禄星宫位：</span>${data.huaLuXingGongWei}</div>
+                        <div class="info-item"><span class="info-label">化权星宫位：</span>${data.huaQuanXingGongWei}</div>
+                        <div class="info-item"><span class="info-label">化科星宫位：</span>${data.huaKeXingGongWei}</div>
+                        <div class="info-item"><span class="info-label">化忌星宫位：</span>${data.huaJiXingGongWei}</div>
+                        <div class="info-item"><span class="info-label">化禄略解：</span>${data.huaLuXingGongWeiLueJie}</div>
+                        <div class="info-item"><span class="info-label">化权略解：</span>${data.huaQuanXingGongWeiLueJie}</div>
+                        <div class="info-item"><span class="info-label">化科略解：</span>${data.huaKeXingGongWeiLueJie}</div>
+                        <div class="info-item"><span class="info-label">化忌略解：</span>${data.huaJiXingGongWeiLueJie}</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>紫微斗数命盘</h3>
+                    ${generateZiWeiChart(data)}
+                </div>
+                
+                <div class="section">
+                    <h3>年干年支诸星</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">年干诸星：</span>${data.nianGanZhuXing ? data.nianGanZhuXing.join(' | ') : ''}</div>
+                        <div class="info-item"><span class="info-label">年支诸星：</span>${data.nianZhiZhuXing ? data.nianZhiZhuXing.join(' | ') : ''}</div>
+                        <div class="info-item"><span class="info-label">时支诸星：</span>${data.shiXiZhuXing ? data.shiXiZhuXing.join(' | ') : ''}</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>小限和博士</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">小限：</span>${data.xiaoXian ? data.xiaoXian.join(' | ') : ''}</div>
+                        <div class="info-item"><span class="info-label">十二宫博士：</span>${data.shiErGongBoShi ? data.shiErGongBoShi.join(' | ') : ''}</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>流年信息</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">流年支：</span>${data.liuNianZhi}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateZiWeiChart(data) {
+            if (!data.shiErMingGong || !data.shiErGongDiZhi || !data.shiErGongZhuXing) {
+                return '<p>紫微斗数数据不完整</p>';
+            }
+
+            // 紫微斗数十二宫位置映射 (4x4标准排盘格式)
+            // 第一行：0:巳宫   1:午宫   2:未宫   3:申宫
+            // 第二行：4:辰宫   5:中央   6:中央   7:酉宫
+            // 第三行：8:卯宫   9:中央   10:中央  11:戌宫
+            // 第四行：12:寅宫  13:丑宫  14:子宫  15:亥宫
+            // 四马地在四个角落：巳(0)、申(3)、寅(12)、亥(15)
+
+            // 十二宫对应的位置索引（按命宫开始的顺序：兄弟、命宫、父母、福德、田宅、官禄、交友、迁移、疾厄、财帛、子女、夫妻）
+            // 对应地支顺序：寅、卯、辰、巳、午、未、申、酉、戌、亥、子、丑
+            const palacePositions = [12, 8, 4, 0, 1, 2, 3, 7, 11, 15, 14, 13]; // 寅卯辰巳午未申酉戌亥子丑的位置
+
+            let html = '<div class="ziwei-chart">';
+
+            // 生成16个位置（12个宫位 + 4个中央位置）
+            for (let pos = 0; pos < 16; pos++) {
+                if (pos === 5 || pos === 6 || pos === 9 || pos === 10) {
+                    // 中央区域（4个格子中的第一个显示信息，其他跳过）
+                    if (pos === 5) {
+                        html += generateCenterInfo(data);
+                    }
+                    continue;
+                }
+
+                // 根据位置找到对应的宫位索引
+                const palaceIndex = palacePositions.indexOf(pos);
+                if (palaceIndex === -1) continue;
+
+                const palaceName = data.shiErMingGong[palaceIndex] || `第${palaceIndex+1}宫`;
+                const diZhi = data.shiErGongDiZhi[palaceIndex] || '';
+                const stars = data.shiErGongZhuXing[palaceIndex] || [];
+                const siHuaStars = data.shiErGongSiHuaXing && data.shiErGongSiHuaXing[palaceIndex] ? data.shiErGongSiHuaXing[palaceIndex] : [];
+
+                // 标记四马地
+                const isSimaPlace = [0, 3, 12, 15].includes(pos); // 巳申寅亥
+                const cellClass = isSimaPlace ? 'ziwei-cell sima-place' : 'ziwei-cell';
+
+                html += `
+                    <div class="${cellClass}">
+                        <div class="palace-header">${palaceName}</div>
+                        <div class="palace-dizhi">${diZhi}${isSimaPlace ? ' ★' : ''}</div>
+                        <div class="stars-container">
+                            ${generateStars(stars, siHuaStars)}
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+            return html;
+        }
+
+        function generateCenterInfo(data) {
+            return `
+                <div class="center-info">
+                    <div class="center-title">紫微斗数</div>
+                    <div class="center-content">
+                        <div><strong>${data.name}</strong> ${data.sex}</div>
+                        <div>${data.solarStr}</div>
+                        <div>${data.lunarStr}</div>
+                        <div>五行局：${data.wuXingJu}</div>
+                        <div>命宫：${data.mingGongDiZhi} 身宫：${data.shenGongDiZhi}</div>
+                        <div>命主：${data.mingZhu} 身主：${data.shenZhu}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateStars(stars, siHuaStars) {
+            let html = '';
+
+            // 主要星曜
+            const majorStars = ['紫微', '天机', '太阳', '武曲', '天同', '廉贞', '天府', '太阴', '贪狼', '巨门', '天相', '天梁', '七杀', '破军'];
+
+            if (stars && stars.length > 0) {
+                stars.forEach(star => {
+                    if (star && star.trim() !== '') {
+                        const isMajor = majorStars.includes(star);
+                        html += `<span class="star ${isMajor ? 'major' : ''}">${star}</span>`;
+                    }
+                });
+            }
+
+            // 四化星
+            if (siHuaStars && siHuaStars.length > 0) {
+                siHuaStars.forEach(siHua => {
+                    if (siHua && siHua.trim() !== '') {
+                        let className = 'sihua';
+                        if (siHua.includes('禄')) className += ' lu';
+                        else if (siHua.includes('权')) className += ' quan';
+                        else if (siHua.includes('科')) className += ' ke';
+                        else if (siHua.includes('忌')) className += ' ji';
+
+                        html += `<span class="star ${className}">${siHua}</span>`;
+                    }
+                });
+            }
+
+            return html || '<span class="star">空</span>';
+        }
+        
+        function displayError(message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<h2>错误</h2><p>${message}</p>`;
+            resultDiv.className = 'result error';
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>命理分析系统 - 测试导航</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px 20px;
+        }
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .module-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .module-card.bazi {
+            border-color: #007bff;
+        }
+        .module-card.liuyao {
+            border-color: #28a745;
+        }
+        .module-card.meihua {
+            border-color: #ffc107;
+        }
+        .module-card.qimen {
+            border-color: #dc3545;
+        }
+        .module-card.ziwei {
+            border-color: #6f42c1;
+        }
+        .module-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        .bazi .module-icon { color: #007bff; }
+        .liuyao .module-icon { color: #28a745; }
+        .meihua .module-icon { color: #ffc107; }
+        .qimen .module-icon { color: #dc3545; }
+        .ziwei .module-icon { color: #6f42c1; }
+        .module-card h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.5em;
+            color: #333;
+        }
+        .module-card p {
+            margin: 0 0 25px 0;
+            color: #666;
+            line-height: 1.6;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+            transform: scale(1.05);
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+            transform: scale(1.05);
+        }
+        .btn-purple {
+            background-color: #6f42c1;
+            color: white;
+        }
+        .btn-purple:hover {
+            background-color: #5a32a3;
+            transform: scale(1.05);
+        }
+        .api-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+        .api-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .api-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        .api-item {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .api-method {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .api-url {
+            font-family: monospace;
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin: 0 5px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔮 命理分析系统</h1>
+            <p>基于传统命理学的现代化分析平台</p>
+        </div>
+        
+        <div class="content">
+            <div class="modules-grid">
+                <div class="module-card bazi">
+                    <div class="module-icon">🎯</div>
+                    <h3>八字排盘</h3>
+                    <p>传统四柱八字分析，包含天干地支、五行分析、十神关系、神煞信息等完整功能</p>
+                    <a href="test.html" class="btn btn-primary">开始测试</a>
+                </div>
+                
+                <div class="module-card liuyao">
+                    <div class="module-icon">☯</div>
+                    <h3>六爻排盘</h3>
+                    <p>传统六爻占卜分析，包含本卦、变卦、世应、六亲、六神等完整卦象信息</p>
+                    <a href="liuyao-test.html" class="btn btn-success">开始测试</a>
+                </div>
+                
+                <div class="module-card meihua">
+                    <div class="module-icon">🌸</div>
+                    <h3>梅花易数</h3>
+                    <p>梅花易数排盘分析，包含本卦、变卦、互卦、错卦、综卦等完整易数信息</p>
+                    <a href="meihua-test.html" class="btn btn-warning">开始测试</a>
+                </div>
+                
+                <div class="module-card qimen">
+                    <div class="module-icon">🗡</div>
+                    <h3>奇门遁甲</h3>
+                    <p>奇门遁甲排盘分析，包含九宫、八门、九星、八神等完整奇门信息</p>
+                    <a href="qimen-test.html" class="btn btn-danger">开始测试</a>
+                </div>
+
+                <div class="module-card ziwei">
+                    <div class="module-icon">🌟</div>
+                    <h3>紫微斗数</h3>
+                    <p>紫微斗数排盘分析，包含十二宫、主星、四化星等完整紫微信息</p>
+                    <a href="ziwei-test.html" class="btn btn-purple">开始测试</a>
+                </div>
+            </div>
+            
+            <div class="api-section">
+                <h3>📡 API接口文档</h3>
+                <div class="api-list">
+                    <div class="api-item">
+                        <div class="api-method">POST</div>
+                        <span class="api-url">/api/bazi/paiPan</span>
+                        <div>八字排盘接口</div>
+                    </div>
+                    <div class="api-item">
+                        <div class="api-method">POST</div>
+                        <span class="api-url">/api/liuyao/paiPan</span>
+                        <div>六爻排盘接口</div>
+                    </div>
+                    <div class="api-item">
+                        <div class="api-method">POST</div>
+                        <span class="api-url">/api/meihua/paiPan</span>
+                        <div>梅花易数排盘接口</div>
+                    </div>
+                    <div class="api-item">
+                        <div class="api-method">POST</div>
+                        <span class="api-url">/api/qimen/paiPan</span>
+                        <div>奇门遁甲排盘接口</div>
+                    </div>
+                    <div class="api-item">
+                        <div class="api-method">POST</div>
+                        <span class="api-url">/api/ziwei/paiPan</span>
+                        <div>紫微斗数排盘接口</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <a href="/swagger-ui.html" class="btn btn-primary">查看完整API文档</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2024 命理分析系统 | 基于Spring Boot + bazi-util构建</p>
+            <p>支持八字、六爻、梅花易数、奇门遁甲、紫微斗数五大命理分析模块</p>
+        </div>
+    </div>
+</body>
+</html>

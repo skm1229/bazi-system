@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>八字排盘Demo</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .success {
+            border-left-color: #28a745;
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .bazi-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .info-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #e9ecef;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            color: #007bff;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔮 八字排盘Demo</h1>
+        
+        <form id="baziForm">
+            <div class="form-group">
+                <label for="dateTime">日期时间 * (格式: yyyy-MM-dd HH:mm:ss)</label>
+                <input type="text" id="dateTime" name="dateTime" required placeholder="2024-01-01 12:00:00">
+            </div>
+            
+            <div class="form-group">
+                <label for="name">姓名</label>
+                <input type="text" id="name" name="name" placeholder="请输入姓名" value="某人">
+            </div>
+            
+            <div class="form-group">
+                <label for="sex">性别</label>
+                <select id="sex" name="sex">
+                    <option value="1">男</option>
+                    <option value="0">女</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="dateType">日期类型</label>
+                <select id="dateType" name="dateType">
+                    <option value="0">公历</option>
+                    <option value="1">农历</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="leapMonth">是否闰月</label>
+                <select id="leapMonth" name="leapMonth">
+                    <option value="0">非闰月</option>
+                    <option value="1">闰月</option>
+                </select>
+            </div>
+            
+            <button type="submit">开始排盘</button>
+        </form>
+        
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        // 设置默认时间为当前时间
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            // 设置为标准格式，更容易解析
+            const standardDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            document.getElementById('dateTime').value = standardDateTime;
+        });
+
+        document.getElementById('baziForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const dateTime = formData.get('dateTime');
+
+            // 创建符合后端DTO格式的数据
+            const dto = {
+                name: formData.get('name') || '某人',
+                sex: parseInt(formData.get('sex')),
+                dateType: parseInt(formData.get('dateType')),
+                leapMonthType: parseInt(formData.get('leapMonth')),
+                date: dateTime,
+                address: '北京市',
+                occupy: '测试',
+                qiYunLiuPaiType: 1,
+                jieQiType: 1,
+                renYuanType: 0,
+                yearGanZhiType: 2,
+                monthGanZhiType: 1,
+                dayGanZhiType: 0,
+                hourGanZhiType: 0
+            };
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<p>正在排盘中...</p>';
+
+            // 使用POST请求发送JSON数据
+            fetch('/api/bazi/paiPan', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dto)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.code === 200) {
+                        displayResult(data.data, true);
+                    } else {
+                        displayResult(data.msg || '排盘失败', false);
+                    }
+                })
+                .catch(error => {
+                    displayResult('网络错误: ' + error.message, false);
+                });
+        });
+        
+        function displayResult(data, isSuccess) {
+            const resultDiv = document.getElementById('result');
+            
+            if (!isSuccess) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<p>❌ ${data}</p>`;
+                return;
+            }
+            
+            resultDiv.className = 'result success';
+            
+            const html = `
+                <h3>✅ 排盘成功</h3>
+                <div class="bazi-info">
+                    <div class="info-item">
+                        <div class="info-label">姓名</div>
+                        <div class="info-value">${data.name || '未知'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">性别</div>
+                        <div class="info-value">${data.sex || '未知'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">公历</div>
+                        <div class="info-value">${data.solarStr || '未知'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">农历</div>
+                        <div class="info-value">${data.lunarStr || '未知'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">年柱</div>
+                        <div class="info-value">${data.yearGanZhi || '未知'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">月柱</div>
+                        <div class="info-value">${data.monthGanZhi || '未知'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">日柱</div>
+                        <div class="info-value">${data.dayGanZhi || '未知'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">时柱</div>
+                        <div class="info-value">${data.hourGanZhi || '未知'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">生肖</div>
+                        <div class="info-value">${data.shengXiao || '未知'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">星座</div>
+                        <div class="info-value">${data.xingZuo || '未知'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">季节</div>
+                        <div class="info-value">${data.season || '未知'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">命宫</div>
+                        <div class="info-value">${data.mingGong || '未知'}</div>
+                    </div>
+                </div>
+                <details style="margin-top: 20px;">
+                    <summary style="cursor: pointer; font-weight: bold;">查看完整数据</summary>
+                    <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; margin-top: 10px;">${JSON.stringify(data, null, 2)}</pre>
+                </details>
+            `;
+            
+            resultDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

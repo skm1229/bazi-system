@@ -1,0 +1,26 @@
+2025-06-06 19:48:47.376 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 6.2.5.Final
+2025-06-06 19:48:47.384 [main] INFO  com.bazi.BaziAppApplication - Starting BaziAppApplication using Java 17.0.13 on LAPTOP-QFFR6E4I with PID 18500 (D:\development_projects\IdeaProjects\bazi-system\bazi-app\target\classes started by 404NotFound in D:\development_projects\IdeaProjects\bazi-system\bazi-app)
+2025-06-06 19:48:47.385 [main] INFO  com.bazi.BaziAppApplication - No active profile set, falling back to 1 default profile: "default"
+2025-06-06 19:48:48.928 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port(s): 9999 (http)
+2025-06-06 19:48:48.930 [main] INFO  o.a.c.core.AprLifecycleListener - An older version [1.2.37] of the Apache Tomcat Native library is installed, while Tomcat recommends a minimum version of [1.2.38]
+2025-06-06 19:48:48.931 [main] INFO  o.a.c.core.AprLifecycleListener - Loaded Apache Tomcat Native library [1.2.37] using APR version [1.7.4].
+2025-06-06 19:48:48.931 [main] INFO  o.a.c.core.AprLifecycleListener - APR capabilities: IPv6 [true], sendfile [true], accept filters [false], random [true], UDS [true].
+2025-06-06 19:48:48.931 [main] INFO  o.a.c.core.AprLifecycleListener - APR/OpenSSL configuration: useAprConnector [false], useOpenSSL [true]
+2025-06-06 19:48:48.942 [main] INFO  o.a.c.core.AprLifecycleListener - OpenSSL successfully initialized [OpenSSL 1.1.1u  30 May 2023]
+2025-06-06 19:48:48.951 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-9999"]
+2025-06-06 19:48:48.954 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-06-06 19:48:48.955 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.83]
+2025-06-06 19:48:49.078 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-06-06 19:48:49.079 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1637 ms
+2025-06-06 19:48:49.356 [main] DEBUG c.b.m.e.s.MybatisSqlSessionFactoryBean - Property 'mapperLocations' was not specified.
+2025-06-06 19:48:50.282 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page: class path resource [static/index.html]
+2025-06-06 19:48:50.457 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-9999"]
+2025-06-06 19:48:50.488 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port(s): 9999 (http) with context path ''
+2025-06-06 19:48:50.497 [main] INFO  com.bazi.BaziAppApplication - Started BaziAppApplication in 3.579 seconds (JVM running for 3.902)
+2025-06-06 19:52:20.529 [http-nio-9999-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-06-06 19:52:20.529 [http-nio-9999-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-06-06 19:52:20.531 [http-nio-9999-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2025-06-06 19:52:22.585 [http-nio-9999-exec-4] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-06-06 19:52:23.006 [http-nio-9999-exec-4] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-06-06 19:56:08.443 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-06-06 19:56:08.457 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

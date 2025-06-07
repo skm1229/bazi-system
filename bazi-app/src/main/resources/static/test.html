@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>八字排盘测试页面</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+        input, select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+        }
+        .info-item {
+            padding: 5px 0;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 120px;
+        }
+        .error {
+            color: red;
+            background-color: #ffe6e6;
+            border-left-color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>八字排盘测试页面</h1>
+        
+        <form id="baziForm">
+            <div class="form-group">
+                <label for="name">姓名：</label>
+                <input type="text" id="name" value="测试用户" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="sex">性别：</label>
+                <select id="sex">
+                    <option value="1">男</option>
+                    <option value="0">女</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="date">出生时间：</label>
+                <input type="text" id="date" value="2002-02-10 19:40:52" placeholder="YYYY-MM-DD HH:mm:ss" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="address">地址：</label>
+                <input type="text" id="address" value="北京">
+            </div>
+            
+            <button type="submit">开始排盘</button>
+        </form>
+        
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('baziForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                sex: parseInt(document.getElementById('sex').value),
+                date: document.getElementById('date').value,
+                address: document.getElementById('address').value,
+                dateType: 0,
+                leapMonthType: 0,
+                jieQiType: 1,
+                yearGanZhiType: 2,
+                monthGanZhiType: 1,
+                dayGanZhiType: 0,
+                hourGanZhiType: 0
+            };
+            
+            try {
+                const response = await fetch('/api/bazi/paiPan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                displayResult(result);
+            } catch (error) {
+                displayError('请求失败: ' + error.message);
+            }
+        });
+        
+        function displayResult(result) {
+            const resultDiv = document.getElementById('result');
+            
+            if (result.code === 200 && result.data) {
+                const data = result.data;
+                resultDiv.innerHTML = `
+                    <h2>八字排盘结果</h2>
+                    
+                    <div class="section">
+                        <h3>基本信息</h3>
+                        <div class="info-grid">
+                            <div class="info-item"><span class="info-label">姓名：</span>${data.name}</div>
+                            <div class="info-item"><span class="info-label">性别：</span>${data.sex}</div>
+                            <div class="info-item"><span class="info-label">乾造/坤造：</span>${data.zao}</div>
+                            <div class="info-item"><span class="info-label">地址：</span>${data.address}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>时间信息</h3>
+                        <div class="info-grid">
+                            <div class="info-item"><span class="info-label">公历：</span>${data.solarStr}</div>
+                            <div class="info-item"><span class="info-label">农历：</span>${data.lunarStr}</div>
+                            <div class="info-item"><span class="info-label">星期：</span>${data.xingQi}</div>
+                            <div class="info-item"><span class="info-label">季节：</span>${data.jiJie}</div>
+                            <div class="info-item"><span class="info-label">生肖：</span>${data.shengXiao}</div>
+                            <div class="info-item"><span class="info-label">星座：</span>${data.xingZuo}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>八字信息</h3>
+                        <div class="info-grid">
+                            <div class="info-item"><span class="info-label">四柱：</span>${data.baZi ? data.baZi.join(' ') : ''}</div>
+                            <div class="info-item"><span class="info-label">年干支：</span>${data.yearGanZhi}</div>
+                            <div class="info-item"><span class="info-label">月干支：</span>${data.monthGanZhi}</div>
+                            <div class="info-item"><span class="info-label">日干支：</span>${data.dayGanZhi}</div>
+                            <div class="info-item"><span class="info-label">时干支：</span>${data.hourGanZhi}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>十神信息</h3>
+                        <div class="info-grid">
+                            <div class="info-item"><span class="info-label">年干支主星：</span>${data.yearGanZhiZhuXing}</div>
+                            <div class="info-item"><span class="info-label">月干支主星：</span>${data.monthGanZhiZhuXing}</div>
+                            <div class="info-item"><span class="info-label">日干支主星：</span>${data.dayGanZhiZhuXing}</div>
+                            <div class="info-item"><span class="info-label">时干支主星：</span>${data.hourGanZhiZhuXing}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>五行信息</h3>
+                        <div class="info-grid">
+                            <div class="info-item"><span class="info-label">八字五行：</span>${data.baZiWuXing ? data.baZiWuXing.join(' ') : ''}</div>
+                            <div class="info-item"><span class="info-label">五行缺失：</span>${data.wuXingQueShi ? data.wuXingQueShi.join(' ') : '无'}</div>
+                            <div class="info-item"><span class="info-label">五行旺衰：</span>${data.wuXingWangShuai ? data.wuXingWangShuai.join(' ') : ''}</div>
+                            <div class="info-item"><span class="info-label">身体强弱：</span>${data.shenTiQiangRuo}</div>
+                            <div class="info-item"><span class="info-label">喜用神：</span>${data.xiYongShen ? data.xiYongShen.join(' ') : ''}</div>
+                            <div class="info-item"><span class="info-label">五行统计：</span>${data.wuXingCount ? data.wuXingCount.join(' ') : ''}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>起运信息</h3>
+                        <div class="info-grid">
+                            <div class="info-item"><span class="info-label">起运：</span>${data.qiYun || '未设置'}</div>
+                            <div class="info-item"><span class="info-label">起运日期：</span>${data.qiYunDateStr || '未设置'}</div>
+                            <div class="info-item"><span class="info-label">交运：</span>${data.jiaoYun || '未设置'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>九星信息</h3>
+                        <div class="info-grid">
+                            <div class="info-item"><span class="info-label">九星五行：</span>年=${data.yearJiuXingWuXing} 月=${data.monthJiuXingWuXing} 日=${data.dayJiuXingWuXing} 时=${data.hourJiuXingWuXing}</div>
+                            <div class="info-item"><span class="info-label">九星方位：</span>年=${data.yearJiuXingFangWei} 月=${data.monthJiuXingFangWei} 日=${data.dayJiuXingFangWei} 时=${data.hourJiuXingFangWei}</div>
+                            <div class="info-item"><span class="info-label">方位描述：</span>年=${data.yearJiuXingFangWeiMiaoShu} 月=${data.monthJiuXingFangWeiMiaoShu} 日=${data.dayJiuXingFangWeiMiaoShu} 时=${data.hourJiuXingFangWeiMiaoShu}</div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3>其他新增功能</h3>
+                        <div class="info-grid">
+                            <div class="info-item"><span class="info-label">冲生肖：</span>年=${data.yearChongShengXiao} 月=${data.monthChongShengXiao} 日=${data.dayChongShengXiao} 时=${data.hourChongShengXiao}</div>
+                            <div class="info-item"><span class="info-label">太岁类型：</span>${data.taiSuiType || '未设置'}</div>
+                            <div class="info-item"><span class="info-label">彭祖百忌：</span>${data.pengZuBaiJi || '未设置'}</div>
+                            <div class="info-item"><span class="info-label">小儿关煞：</span>${data.xiaoErGuanSha || '未实现'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>胎命身信息</h3>
+                        <div class="info-grid">
+                            <div class="info-item"><span class="info-label">胎元：</span>${data.taiYuan}</div>
+                            <div class="info-item"><span class="info-label">胎息：</span>${data.taiXi}</div>
+                            <div class="info-item"><span class="info-label">命宫：</span>${data.mingGong}</div>
+                            <div class="info-item"><span class="info-label">身宫：</span>${data.shenGong}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>神煞信息</h3>
+                        <div class="info-grid">
+                            <div class="info-item"><span class="info-label">年干支神煞：</span>${data.yearGanZhiShenSha ? data.yearGanZhiShenSha.join(' ') : ''}</div>
+                            <div class="info-item"><span class="info-label">月干支神煞：</span>${data.monthGanZhiShenSha ? data.monthGanZhiShenSha.join(' ') : ''}</div>
+                            <div class="info-item"><span class="info-label">日干支神煞：</span>${data.dayGanZhiShenSha ? data.dayGanZhiShenSha.join(' ') : ''}</div>
+                            <div class="info-item"><span class="info-label">时干支神煞：</span>${data.hourGanZhiShenSha ? data.hourGanZhiShenSha.join(' ') : ''}</div>
+                        </div>
+                    </div>
+                `;
+                resultDiv.className = 'result';
+            } else {
+                displayError(result.message || '排盘失败');
+            }
+            
+            resultDiv.style.display = 'block';
+        }
+        
+        function displayError(message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<h2>错误</h2><p>${message}</p>`;
+            resultDiv.className = 'result error';
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

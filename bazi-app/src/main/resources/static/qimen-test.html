@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奇门遁甲排盘测试页面</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+            display: inline-block;
+            width: 300px;
+            margin-right: 20px;
+        }
+        label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+        input, select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 150px;
+        }
+        button {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background-color: #c82333;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-left: 4px solid #dc3545;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #dc3545;
+            padding-bottom: 5px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+        }
+        .info-item {
+            padding: 5px 0;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 120px;
+        }
+        .error {
+            color: red;
+            background-color: #ffe6e6;
+            border-left-color: red;
+        }
+        .qimen-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .qimen-cell {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            background-color: #f9f9f9;
+            min-height: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>奇门遁甲排盘测试页面</h1>
+        
+        <form id="qimenForm">
+            <div class="form-group">
+                <label for="name">姓名：</label>
+                <input type="text" id="name" value="测试用户" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="sex">性别：</label>
+                <select id="sex">
+                    <option value="1">男</option>
+                    <option value="0">女</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="occupy">占事：</label>
+                <input type="text" id="occupy" value="求财" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="date">出生时间：</label>
+                <input type="text" id="date" value="2002-02-10 19:40:52" placeholder="YYYY-MM-DD HH:mm:ss" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="dateType">日期类型：</label>
+                <select id="dateType">
+                    <option value="0">公历</option>
+                    <option value="1">农历</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="leapMonthType">闰月类型：</label>
+                <select id="leapMonthType">
+                    <option value="0">不使用闰月</option>
+                    <option value="1">使用闰月</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="jieQiType">节气类型：</label>
+                <select id="jieQiType">
+                    <option value="0">按天计算</option>
+                    <option value="1" selected>按分钟计算</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="paiPanType">排盘类型：</label>
+                <select id="paiPanType">
+                    <option value="0">年家奇门</option>
+                    <option value="1">月家奇门</option>
+                    <option value="2">日家奇门</option>
+                    <option value="3" selected>时家奇门</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="zhiShiType">值使类型：</label>
+                <select id="zhiShiType">
+                    <option value="0" selected>天禽星为值符时，一律用死门为值使</option>
+                    <option value="1">天禽星为值符时，根据阴阳遁判断</option>
+                    <option value="2">天禽星为值符时，根据节气判断</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="yueJiaQiJuType">月家奇门起局类型：</label>
+                <select id="yueJiaQiJuType">
+                    <option value="0">使用年支起局</option>
+                    <option value="1" selected>使用年干支的符头地支起局</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="yearGanZhiType">年干支类型：</label>
+                <select id="yearGanZhiType">
+                    <option value="0">正月初一</option>
+                    <option value="1">立春当天</option>
+                    <option value="2" selected>立春交接时刻</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="monthGanZhiType">月干支类型：</label>
+                <select id="monthGanZhiType">
+                    <option value="0">节交接当天</option>
+                    <option value="1" selected>节交接时刻</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="dayGanZhiType">日干支类型：</label>
+                <select id="dayGanZhiType">
+                    <option value="0" selected>晚子时按明天</option>
+                    <option value="1">晚子时按当天</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="hourGanZhiType">时干支类型：</label>
+                <select id="hourGanZhiType">
+                    <option value="0" selected>支持早晚子时</option>
+                </select>
+            </div>
+            
+            <button type="submit">开始奇门遁甲排盘</button>
+        </form>
+        
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('qimenForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                sex: parseInt(document.getElementById('sex').value),
+                occupy: document.getElementById('occupy').value,
+                date: document.getElementById('date').value,
+                dateType: parseInt(document.getElementById('dateType').value),
+                leapMonthType: parseInt(document.getElementById('leapMonthType').value),
+                jieQiType: parseInt(document.getElementById('jieQiType').value),
+                paiPanType: parseInt(document.getElementById('paiPanType').value),
+                zhiShiType: parseInt(document.getElementById('zhiShiType').value),
+                yueJiaQiJuType: parseInt(document.getElementById('yueJiaQiJuType').value),
+                yearGanZhiType: parseInt(document.getElementById('yearGanZhiType').value),
+                monthGanZhiType: parseInt(document.getElementById('monthGanZhiType').value),
+                dayGanZhiType: parseInt(document.getElementById('dayGanZhiType').value),
+                hourGanZhiType: parseInt(document.getElementById('hourGanZhiType').value)
+            };
+            
+            try {
+                const response = await fetch('/api/qimen/paiPan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                displayResult(result);
+            } catch (error) {
+                displayError('请求失败: ' + error.message);
+            }
+        });
+        
+        function displayResult(result) {
+            const resultDiv = document.getElementById('result');
+            
+            if (result.code === 200 && result.data) {
+                const data = result.data;
+                resultDiv.innerHTML = generateResultHTML(data);
+                resultDiv.className = 'result';
+            } else {
+                displayError(result.message || '奇门遁甲排盘失败');
+            }
+            
+            resultDiv.style.display = 'block';
+        }
+        
+        function generateResultHTML(data) {
+            return `
+                <h2>奇门遁甲排盘结果</h2>
+                
+                <div class="section">
+                    <h3>基本信息</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">姓名：</span>${data.name}</div>
+                        <div class="info-item"><span class="info-label">性别：</span>${data.sex}</div>
+                        <div class="info-item"><span class="info-label">乾造/坤造：</span>${data.zao}</div>
+                        <div class="info-item"><span class="info-label">占事：</span>${data.occupy}</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>时间信息</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">公历：</span>${data.solarStr}</div>
+                        <div class="info-item"><span class="info-label">农历：</span>${data.lunarStr}</div>
+                        <div class="info-item"><span class="info-label">星期：</span>${data.xingQi}</div>
+                        <div class="info-item"><span class="info-label">季节：</span>${data.jiJie}</div>
+                        <div class="info-item"><span class="info-label">生肖：</span>${data.shengXiao}</div>
+                        <div class="info-item"><span class="info-label">星座：</span>${data.xingZuo}</div>
+                        <div class="info-item"><span class="info-label">月相：</span>${data.yueXiang}</div>
+                        <div class="info-item"><span class="info-label">月将：</span>${data.yueJiang}</div>
+                        <div class="info-item"><span class="info-label">月将神：</span>${data.yueJiangShen}</div>
+                        <div class="info-item"><span class="info-label">五不遇时：</span>${data.wuBuYuShi}</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>八字信息</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">四柱：</span>${data.baZi ? data.baZi.join(' ') : ''}</div>
+                        <div class="info-item"><span class="info-label">五行：</span>${data.baZiWuXing ? data.baZiWuXing.join(' ') : ''}</div>
+                        <div class="info-item"><span class="info-label">纳音：</span>${data.baZiNaYin ? data.baZiNaYin.join(' ') : ''}</div>
+                        <div class="info-item"><span class="info-label">空亡：</span>${data.baZiKongWang ? data.baZiKongWang.join(' ') : ''}</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>奇门遁甲核心信息</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">符头：</span>${data.fuTou}</div>
+                        <div class="info-item"><span class="info-label">节气：</span>${data.jieQi}</div>
+                        <div class="info-item"><span class="info-label">三元：</span>${data.sanYuan}</div>
+                        <div class="info-item"><span class="info-label">局数：</span>${data.juShu}</div>
+                        <div class="info-item"><span class="info-label">阴阳遁：</span>${data.yinYangDun}</div>
+                        <div class="info-item"><span class="info-label">旬首：</span>${data.xunShou}</div>
+                        <div class="info-item"><span class="info-label">旬首仪仗：</span>${data.xunShouYiZhang}</div>
+                        <div class="info-item"><span class="info-label">值符：</span>${data.zhiFu}</div>
+                        <div class="info-item"><span class="info-label">值使：</span>${data.zhiShi}</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>天地太乙</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">天乙：</span>${data.tianYi}</div>
+                        <div class="info-item"><span class="info-label">地乙：</span>${data.diYi}</div>
+                        <div class="info-item"><span class="info-label">太乙：</span>${data.taiYi}</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>九宫信息</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">地盘：</span>${data.diPan ? data.diPan.join(' | ') : ''}</div>
+                        <div class="info-item"><span class="info-label">天盘：</span>${data.tianPan ? data.tianPan.join(' | ') : ''}</div>
+                        <div class="info-item"><span class="info-label">人盘：</span>${data.renPan ? data.renPan.join(' | ') : ''}</div>
+                        <div class="info-item"><span class="info-label">神盘：</span>${data.shenPan ? data.shenPan.join(' | ') : ''}</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>伏吟反吟</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">伏吟：</span>${data.fuYin ? data.fuYin.join(' | ') : ''}</div>
+                        <div class="info-item"><span class="info-label">反吟：</span>${data.fanYin ? data.fanYin.join(' | ') : ''}</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>击刑入墓</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">六仪击刑：</span>${data.liuYiJiXing ? data.liuYiJiXing.join(' | ') : ''}</div>
+                        <div class="info-item"><span class="info-label">奇仪入墓：</span>${data.qiYiRuMu ? data.qiYiRuMu.join(' | ') : ''}</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>门迫状态</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">门迫：</span>${data.menPoLink ? data.menPoLink.join(' | ') : ''}</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>九遁信息</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">九遁：</span>${formatJiuDun(data.jiuDun)}</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>天干地支详情</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span class="info-label">年干支：</span>${data.yearGanZhi} (${data.yearGanZhiWuXing})</div>
+                        <div class="info-item"><span class="info-label">月干支：</span>${data.monthGanZhi} (${data.monthGanZhiWuXing})</div>
+                        <div class="info-item"><span class="info-label">日干支：</span>${data.dayGanZhi} (${data.dayGanZhiWuXing})</div>
+                        <div class="info-item"><span class="info-label">时干支：</span>${data.hourGanZhi} (${data.hourGanZhiWuXing})</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function formatJiuDun(jiuDun) {
+            if (!jiuDun) return '';
+            let result = '';
+            for (let key in jiuDun) {
+                result += `${key}: ${jiuDun[key].join(', ')} | `;
+            }
+            return result.slice(0, -3); // 移除最后的 ' | '
+        }
+        
+        function displayError(message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<h2>错误</h2><p>${message}</p>`;
+            resultDiv.className = 'result error';
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

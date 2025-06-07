@@ -1,0 +1,27 @@
+/* 全局样式入口文件 */
+
+// [!] 修改：使用 @use 替换 @import
+@use 'variables';
+@use 'utilities';
+
+// 全局样式重置
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+// 定义基础样式
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  color: var(--color-dark-text-primary);
+  background-color: var(--color-light-2);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  height: 100%;
+}
