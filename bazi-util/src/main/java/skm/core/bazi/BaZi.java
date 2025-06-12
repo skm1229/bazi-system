@@ -11,6 +11,7 @@ import com.nlf.calendar.eightchar.Yun;
 import skm.core.bazi.maps.BaZiJiChuMap;
 import skm.core.bazi.maps.BaZiFenXiMap;
 import com.nlf.calendar.eightchar.DaYun;
+import java.util.Arrays;
 import java.util.List;
 import com.nlf.calendar.eightchar.LiuNian;
 import skm.core.bazi.utils.BaZiJiChuUtil;
@@ -2007,7 +2008,7 @@ public class BaZi {
         int yearCount = 0;
         String yearStr = String.valueOf(getLunar().getYear());
         for (int i = 0; i < yearStr.length(); i++) {
-            yearCount += Integer.parseInt(yearStr.split("")[i]);
+            yearCount += Integer.parseInt(String.valueOf(yearStr.charAt(i)));
         }
 
         // 男命
@@ -2018,13 +2019,16 @@ public class BaZi {
                     String yearCountStr = String.valueOf(yearCount);
                     yearCount = 0;
                     for (int i = 0; i < yearCountStr.length(); i++) {
-                        yearCount += Integer.parseInt(yearCountStr.split("")[i]);
+                        yearCount += Integer.parseInt(String.valueOf(yearCountStr.charAt(i)));
                     }
                 } else break;
             }
             // 使用（11-数字之和）得出男命命卦宫位
-            yearCount = 11 - yearCount == 5 ? 2 : 11 - yearCount; // 男命命卦宫位为5时，寄坤宫
-            return mingGuaMap.get(yearCount); // 获取命卦
+            int mingGuaGong = 11 - yearCount;
+            if (mingGuaGong == 5) {
+                mingGuaGong = 2; // 男命命卦宫位为5时，寄坤宫
+            }
+            return mingGuaMap.get(mingGuaGong); // 获取命卦
         } else {
             // 女命
             int womManMingGuaGong = yearCount + 4; // 数字B
@@ -2047,7 +2051,11 @@ public class BaZi {
      */
     public List<String> getMingGuaFenXi() {
         String mingGua = getMingGua();
-        return BaZiFenXiMap.MING_GUA_FEN_XI.get(mingGua);
+        if (mingGua == null) {
+            return Arrays.asList("命卦信息暂无");
+        }
+        List<String> result = BaZiFenXiMap.MING_GUA_FEN_XI.get(mingGua);
+        return result != null ? result : Arrays.asList("命卦分析暂无");
     }
 
     /**
@@ -2056,8 +2064,13 @@ public class BaZi {
      * @return 五行分析（如：木主仁，温柔随和...）
      */
     public String getWuXingFenXi() {
-        String yearNaYin = getYearGanZhiNaYin().substring(2, 3); // 年柱纳音五行（如：木）
-        return BaZiFenXiMap.WU_XING_FEN_XI.get(yearNaYin);
+        String yearGanZhiNaYin = getYearGanZhiNaYin();
+        if (yearGanZhiNaYin == null || yearGanZhiNaYin.length() < 3) {
+            return "五行分析暂无";
+        }
+        String yearNaYin = yearGanZhiNaYin.substring(2, 3); // 年柱纳音五行（如：木）
+        String result = BaZiFenXiMap.WU_XING_FEN_XI.get(yearNaYin);
+        return result != null ? result : "五行分析暂无";
     }
 
     @Override

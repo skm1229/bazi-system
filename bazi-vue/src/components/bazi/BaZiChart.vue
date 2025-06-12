@@ -40,6 +40,13 @@
             <td><div v-for="item in data.hourZhiCangGan" :key="item" :style="{ color: getWuxingColor(item.charAt(0)) }">{{ item }}</div></td>
           </tr>
           <tr>
+            <td class="row-header">副星</td>
+            <td><div v-for="item in data.yearGanZhiFuXing" :key="item">{{ item }}</div></td>
+            <td><div v-for="item in data.monthGanZhiFuXing" :key="item">{{ item }}</div></td>
+            <td><div v-for="item in data.dayGanZhiFuXing" :key="item">{{ item }}</div></td>
+            <td><div v-for="item in data.hourGanZhiFuXing" :key="item">{{ item }}</div></td>
+          </tr>
+          <tr>
             <td class="row-header">纳音</td>
             <td>{{ data.yearGanZhiNaYin }}</td>
             <td>{{ data.monthGanZhiNaYin }}</td>

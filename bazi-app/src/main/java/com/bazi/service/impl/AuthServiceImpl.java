@@ -6,6 +6,7 @@ import com.bazi.common.result.ResultEnum;
 import com.bazi.entity.User;
 import com.bazi.mapper.UserMapper;
 import com.bazi.service.AuthService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import java.util.UUID;
  * @version 1.0.0
  */
 @Service
+@Slf4j
 public class AuthServiceImpl implements AuthService {
 
     @Resource
@@ -66,13 +68,33 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public User register(User user) {
-        // 检查用户名是否已存在
+        log.debug("开始注册用户: {}", user.getUsername());
+        
+        // 检查用户名是否已存在 - 使用更直接的查询方式
+        log.debug("执行用户名存在性检查: {}", user.getUsername());
+        
+        // 方法1: 使用selectOne查询
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<User>()
                 .eq(User::getUsername, user.getUsername());
-
         User existingUser = userMapper.selectOne(queryWrapper);
-        if (existingUser != null) {
+        log.debug("方法1查询结果: {}", existingUser != null ? "用户名已存在" : "用户名不存在");
+        
+        // 方法2: 使用selectCount查询
+        Integer count = Math.toIntExact(userMapper.selectCount(queryWrapper));
+        log.debug("方法2查询结果: count={}, {}", count, count > 0 ? "用户名已存在" : "用户名不存在");
+        
+        // 如果任一方法检测到用户名存在，则抛出异常
+        if (existingUser != null || (count != null && count > 0)) {
+            log.warn("用户名已存在: {}", user.getUsername());
             throw new BusinessException(ResultEnum.USERNAME_EXISTS);
+        }
+
+        // 处理空邮箱问题 - 如果邮箱为空或空字符串，设置为一个基于用户名的唯一值
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+            // 生成一个基于用户名的唯一邮箱占位符
+            String placeholderEmail = user.getUsername() + "_" + System.currentTimeMillis() + "@placeholder.local";
+            log.debug("设置邮箱占位符: {}", placeholderEmail);
+            user.setEmail(placeholderEmail);
         }
 
         // 加密密码
@@ -84,7 +106,10 @@ public class AuthServiceImpl implements AuthService {
 
         // 保存用户，处理数据库约束异常
         try {
+            log.debug("尝试插入新用户: {}", user.getUsername());
             userMapper.insert(user);
+            log.debug("用户插入成功: {}", user.getUsername());
+            
             // 保存成功后生成token并更新到数据库
             String newToken = generateToken(user.getId());
             user.setToken(newToken);
@@ -92,10 +117,14 @@ public class AuthServiceImpl implements AuthService {
         } catch (DuplicateKeyException e) {
             // 根据异常信息判断是用户名还是邮箱重复
             String errorMessage = e.getMessage();
+            log.error("数据库插入异常: {}", errorMessage);
+            
             if (errorMessage != null && errorMessage.contains("uk_username")) {
+                log.warn("数据库约束违反: 用户名已存在: {}", user.getUsername());
                 throw new BusinessException(ResultEnum.USERNAME_EXISTS);
             }
             if (errorMessage != null && errorMessage.contains("uk_email")) {
+                log.warn("数据库约束违反: 邮箱已存在: {}", user.getEmail());
                 throw new BusinessException(ResultEnum.EMAIL_EXISTS);
             }
             throw new BusinessException(ResultEnum.SYSTEM_ERROR);

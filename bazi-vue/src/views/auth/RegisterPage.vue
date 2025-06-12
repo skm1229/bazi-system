@@ -50,7 +50,13 @@ const rules = reactive({
 const handleRegister = async () => {
   if (!registerFormRef.value) return;
   const valid = await registerFormRef.value.validate();
-  if (valid) await register(formState);
+  if (valid) {
+    const userData = { ...formState };
+    if (userData.email === '') {
+      userData.email = null;
+    }
+    await register(userData);
+  }
 };
 </script>
 
